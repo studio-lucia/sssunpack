@@ -39,11 +39,10 @@ fn main() {
                               .index(1))
                           .arg(Arg::with_name("target")
                               .help("Directory into which unpacked files should be saved")
-                              .required(true)
                               .index(2))
                           .get_matches();
     let input = matches.value_of("input").unwrap().to_string();
-    let target = matches.value_of("target").unwrap().to_string();
+    let target = matches.value_of("target").unwrap_or(".").to_string();
 
     exit(match do_stuff(input, target) {
         Ok(_) => 0,
