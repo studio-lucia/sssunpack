@@ -18,7 +18,7 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
         return Err(format!("The specified input file ({}) is not a file!", input));
     }
 
-    if !target_path.parent().unwrap().is_dir() {
+    if !target_path.is_dir() {
         return Err(format!("The specified target directory ({}) is invalid!", target));
     }
 
