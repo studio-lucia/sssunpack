@@ -1,7 +1,8 @@
 use std::env;
 use std::fs::File;
 use std::iter::Iterator;
-// use std::io;
+use std::io::BufReader;
+use std::io::prelude::*;
 use std::path::Path;
 use std::process::exit;
 
@@ -22,7 +23,10 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
         return Err(format!("The specified target directory ({}) is invalid!", target));
     }
 
-    let mut input_file = File::open(&input_path);
+    let input_file = File::open(&input_path).unwrap();
+    let mut buf_reader = BufReader::new(input_file);
+    let mut data = String::new();
+    buf_reader.read_to_string(&mut data);
 
     println!("{}", input_path.to_string_lossy());
     return Ok(());
