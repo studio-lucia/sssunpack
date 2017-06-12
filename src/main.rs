@@ -23,8 +23,8 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
 
     let input_file = File::open(&input_path).unwrap();
     let mut buf_reader = BufReader::new(input_file);
-    let mut data = String::new();
-    buf_reader.read_to_string(&mut data);
+    let mut data : Vec<u8> = Vec::new();
+    buf_reader.read_to_end(&mut data);
 
     println!("{}", input_path.to_string_lossy());
     return Ok(());
