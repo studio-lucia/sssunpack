@@ -19,17 +19,12 @@ fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
     return u16::from_be(val);
 }
 
-fn slice_as_vec(slice : &[u8]) -> Vec<u8> {
-    let mut v : Vec<u8> = Vec::new();
-    for i in 0..slice.len() {
-        v.push(slice[i]);
-    }
-    return v;
-}
-
 fn parse_file_listing(data : &[u8; 24]) -> FileEntry {
+    let mut filename : Vec<u8> = vec![];
+    filename.extend_from_slice(&data[0..11]);
+
     return FileEntry {
-        name: String::from_utf8(slice_as_vec(&data[0..11])).unwrap(),
+        name: String::from_utf8(filename).unwrap(),
         start: uint16_from_bytes([data[14], data[15]]),
         end: uint16_from_bytes([data[18], data[19]]),
         length: uint16_from_bytes([data[22], data[23]]),
