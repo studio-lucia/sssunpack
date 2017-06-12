@@ -7,6 +7,35 @@ use std::process::exit;
 extern crate clap;
 use clap::{Arg, App};
 
+struct FileEntry {
+    name: String,
+    start: u16,
+    end: u16,
+    length: u16,
+}
+
+fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
+    let val : u16 = (bytes[0] as u16) << 8 + bytes[1];
+    return u16::from_be(val);
+}
+
+fn slice_as_vec(slice : &[u8]) -> Vec<u8> {
+    let mut v = Vec::new();
+    for i in 0..slice.len() {
+        v.push(slice[i]);
+    }
+    return v;
+}
+
+fn parse_file_listing(data : &[u8; 24]) -> FileEntry {
+    return FileEntry {
+        name: String::from_utf8(slice_as_vec(&data[0..11])).unwrap(),
+        start: uint16_from_bytes([data[14], data[15]]),
+        end: uint16_from_bytes([data[18], data[19]]),
+        length: uint16_from_bytes([data[22], data[23]]),
+    }
+}
+
 fn do_stuff(input : String, target : String) -> Result<(), String> {
     let input_path = Path::new(&input);
     let target_path = Path::new(&target);
