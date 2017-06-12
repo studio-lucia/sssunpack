@@ -20,7 +20,7 @@ fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
 }
 
 fn slice_as_vec(slice : &[u8]) -> Vec<u8> {
-    let mut v = Vec::new();
+    let mut v : Vec<u8> = Vec::new();
     for i in 0..slice.len() {
         v.push(slice[i]);
     }
