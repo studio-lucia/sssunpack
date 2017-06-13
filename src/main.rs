@@ -15,8 +15,7 @@ struct FileEntry {
 }
 
 fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
-    let val : u16 = (bytes[0] as u16) << 8 + bytes[1];
-    return u16::from_be(val);
+    return ((bytes[0] as u16) << 8) + bytes[1] as u16;
 }
 
 fn parse_file_listing(data : &[u8; 24]) -> FileEntry {
