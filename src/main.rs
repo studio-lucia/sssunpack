@@ -18,7 +18,7 @@ fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
     return ((bytes[0] as u16) << 8) + bytes[1] as u16;
 }
 
-fn parse_file_listing(data : &[u8; 24]) -> FileEntry {
+fn parse_file_listing(data : &[u8]) -> FileEntry {
     let mut filename : Vec<u8> = vec![];
     filename.extend_from_slice(&data[0..11]);
 
