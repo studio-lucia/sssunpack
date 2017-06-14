@@ -71,7 +71,10 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
     let input_file = File::open(&input_path).unwrap();
     let mut buf_reader = BufReader::new(input_file);
     let mut data : Vec<u8> = Vec::new();
-    buf_reader.read_to_end(&mut data);
+    match buf_reader.read_to_end(&mut data) {
+        Ok(_) => {},
+        Err(e) => return Err(format!("Unable to read file {}: {}", input, e)),
+    }
 
     let header_size = get_header_length(&data[0..24]);
     // The header is padded out to an even sector boundary, so some of the 24-byte
