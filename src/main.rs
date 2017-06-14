@@ -39,6 +39,20 @@ fn parse_file_listing(data : &[u8]) -> Option<FileEntry> {
     });
 }
 
+// Given the first file, determines the size (in sectors) of the header.
+// The header may be one or more sectors, depending on how many files there are,
+// and will always be padded out to an even sector boundary. 
+fn get_header_length(data : &[u8]) -> Result<usize, String> {
+    // The index of the first file comes at the sector right after
+    // the header ends.
+    // Since this is 0-indexed, we can return it directly to get the
+    // header length in sectors.
+    match parse_file_listing(&data[0..24]) {
+        Some(f) => return Ok(f.start as usize),
+        None => return Err(String::from("Unable to parse header!")),
+    }
+}
+
 fn do_stuff(input : String, target : String) -> Result<(), String> {
     let input_path = Path::new(&input);
     let target_path = Path::new(&target);
