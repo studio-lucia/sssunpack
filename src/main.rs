@@ -7,6 +7,9 @@ use std::process::exit;
 extern crate clap;
 use clap::{Arg, App};
 
+// Size of a Mode-1 CD-ROM sector, in bytes
+const SECTOR_LENGTH : usize = 2048;
+
 struct FileEntry {
     name: String,
     start: u16,
