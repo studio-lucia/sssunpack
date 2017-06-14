@@ -1,3 +1,4 @@
+use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::io::prelude::*;
@@ -72,7 +73,31 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
     let mut data : Vec<u8> = Vec::new();
     buf_reader.read_to_end(&mut data);
 
-    println!("{}", input_path.to_string_lossy());
+    let header_size = get_header_length(&data[0..24]);
+    // The header is padded out to an even sector boundary, so some of the 24-byte
+    // chunks we slice here are going to be 0-byte and will parse to None
+    let files : Vec<FileEntry> = data[0..SECTOR_LENGTH * header_size.unwrap()]
+        .chunks(24)
+        .filter_map(|header| parse_file_listing(header))
+        .collect();
+
+    let unpacked_path = target_path.join(input_path.file_name().unwrap());
+    match fs::create_dir(&unpacked_path) {
+        Ok(_) => {},
+        Err(e) => return Err(format!("Unable to create directory to unpack in: {}", e)),
+    }
+
+    for file in files {
+        let file_path = &unpacked_path.join(file.name);
+        match File::create(file_path) {
+            Ok(mut f) => {
+                let starting_position = file.start as usize * SECTOR_LENGTH;
+                f.write_all(&data[starting_position..starting_position + file.length as usize]);
+            },
+            Err(e) => return Err(format!("Unable to create a file at path {}: {}", file_path.to_string_lossy(), e)),
+        }
+    }
+
     return Ok(());
 }
 
