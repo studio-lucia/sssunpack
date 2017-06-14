@@ -21,16 +21,22 @@ fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
     return ((bytes[0] as u16) << 8) + bytes[1] as u16;
 }
 
-fn parse_file_listing(data : &[u8]) -> FileEntry {
+fn parse_file_listing(data : &[u8]) -> Option<FileEntry> {
+    // Filename can't begin with nul bytes, so this indicates
+    // dummy data.
+    if data[0] == 0x0 {
+        return None;
+    }
+
     let mut filename : Vec<u8> = vec![];
     filename.extend_from_slice(&data[0..11]);
 
-    return FileEntry {
+    return Some(FileEntry {
         name: String::from_utf8(filename).unwrap(),
         start: uint16_from_bytes([data[14], data[15]]),
         end: uint16_from_bytes([data[18], data[19]]),
         length: uint16_from_bytes([data[22], data[23]]),
-    }
+    });
 }
 
 fn do_stuff(input : String, target : String) -> Result<(), String> {
