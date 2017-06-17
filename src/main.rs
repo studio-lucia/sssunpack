@@ -54,6 +54,16 @@ fn get_header_length(data : &[u8]) -> Result<usize, String> {
     }
 }
 
+fn parse_files_from_header(data : &[u8]) -> Vec<FileEntry> {
+    let header_size = get_header_length(&data[0..24]);
+    // The header is padded out to an even sector boundary, so some of the 24-byte
+    // chunks we slice here are going to be 0-byte and will parse to None
+    return data[0..SECTOR_LENGTH * header_size.unwrap()]
+        .chunks(24)
+        .filter_map(|header| parse_file_listing(header))
+        .collect();
+}
+
 fn do_stuff(input : String, target : String) -> Result<(), String> {
     let input_path = Path::new(&input);
     let target_path = Path::new(&target);
@@ -76,13 +86,7 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
         Err(e) => return Err(format!("Unable to read file {}: {}", input, e)),
     }
 
-    let header_size = get_header_length(&data[0..24]);
-    // The header is padded out to an even sector boundary, so some of the 24-byte
-    // chunks we slice here are going to be 0-byte and will parse to None
-    let files : Vec<FileEntry> = data[0..SECTOR_LENGTH * header_size.unwrap()]
-        .chunks(24)
-        .filter_map(|header| parse_file_listing(header))
-        .collect();
+    let files = parse_files_from_header(&data);
 
     let unpacked_path = target_path.join(input_path.file_name().unwrap());
     match fs::create_dir(&unpacked_path) {
