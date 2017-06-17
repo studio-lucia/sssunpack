@@ -32,8 +32,12 @@ fn parse_file_listing(data : &[u8]) -> Option<FileEntry> {
         return None;
     }
 
-    let mut filename : Vec<u8> = vec![];
-    filename.extend_from_slice(&data[0..11]);
+    // Filename is up to 12 bytes, padded out with nul bytes we want to strip
+    let filename = data[0..12]
+        .iter()
+        .cloned()
+        .take_while(|i| *i != 0)
+        .collect();
 
     return Some(FileEntry {
         name: String::from_utf8(filename).unwrap(),
