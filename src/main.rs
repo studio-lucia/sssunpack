@@ -64,19 +64,30 @@ fn parse_files_from_header(data : &[u8]) -> Vec<FileEntry> {
         .collect();
 }
 
+fn validate_input_path(input_path : &Path) -> Result<(), String> {
+    if !input_path.exists() {
+        return Err(format!("The specified input file ({}) does not exist!", input_path.to_string_lossy()));
+    } else if !input_path.is_file() {
+        return Err(format!("The specified input file ({}) is not a file!", input_path.to_string_lossy()));
+    }
+
+    return Ok(());
+}
+
+fn validate_target_path(target_path : &Path) -> Result<(), String> {
+    if !target_path.is_dir() {
+        return Err(format!("The specified target directory ({}) is invalid!", target_path.to_string_lossy()));
+    }
+
+    return Ok(());
+}
+
 fn do_stuff(input : String, target : String) -> Result<(), String> {
     let input_path = Path::new(&input);
     let target_path = Path::new(&target);
 
-    if !input_path.exists() {
-        return Err(format!("The specified input file ({}) does not exist!", input));
-    } else if !input_path.is_file() {
-        return Err(format!("The specified input file ({}) is not a file!", input));
-    }
-
-    if !target_path.is_dir() {
-        return Err(format!("The specified target directory ({}) is invalid!", target));
-    }
+    validate_input_path(input_path)?;
+    validate_target_path(target_path)?;
 
     let input_file = File::open(&input_path).unwrap();
     let mut buf_reader = BufReader::new(input_file);
