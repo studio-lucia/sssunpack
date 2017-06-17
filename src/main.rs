@@ -85,6 +85,22 @@ fn validate_target_path(target_path : &Path) -> Result<(), String> {
     return Ok(());
 }
 
+fn write_file(data : &[u8], file : &FileEntry, target_path : &Path) -> Result<(), String> {
+    let file_path = &target_path.join(&file.name);
+    match File::create(file_path) {
+        Ok(mut f) => {
+            let starting_position = file.start as usize * SECTOR_LENGTH;
+            match f.write_all(&data[starting_position..starting_position + file.length as usize]) {
+                Ok(_) => {},
+                Err(e) => return Err(format!("Error encountered while writing file {}: {}", &file.name, e)),
+            }
+        },
+        Err(e) => return Err(format!("Unable to create a file at path {}: {}", file_path.to_string_lossy(), e)),
+    }
+
+    return Ok(());
+}
+
 fn do_stuff(input : String, target : String) -> Result<(), String> {
     let input_path = Path::new(&input);
     let target_path = Path::new(&target);
@@ -109,17 +125,7 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
     }
 
     for file in files {
-        let file_path = &unpacked_path.join(&file.name);
-        match File::create(file_path) {
-            Ok(mut f) => {
-                let starting_position = file.start as usize * SECTOR_LENGTH;
-                match f.write_all(&data[starting_position..starting_position + file.length as usize]) {
-                    Ok(_) => {},
-                    Err(e) => return Err(format!("Error encountered while writing file {}: {}", &file.name, e)),
-                }
-            },
-            Err(e) => return Err(format!("Unable to create a file at path {}: {}", file_path.to_string_lossy(), e)),
-        }
+        write_file(&data, &file, &unpacked_path)?;
     }
 
     return Ok(());
