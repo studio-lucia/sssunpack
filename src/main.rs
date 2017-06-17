@@ -123,9 +123,11 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
     let files = parse_files_from_header(&data);
 
     let unpacked_path = target_path.join(input_path.file_name().unwrap());
-    match fs::create_dir(&unpacked_path) {
-        Ok(_) => {},
-        Err(e) => return Err(format!("Unable to create directory to unpack in: {}", e)),
+    if !unpacked_path.is_dir() {
+        match fs::create_dir(&unpacked_path) {
+            Ok(_) => {},
+            Err(e) => return Err(format!("Unable to create directory to unpack in: {}", e)),
+        }
     }
 
     for file in files {
