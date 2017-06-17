@@ -109,11 +109,14 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
     }
 
     for file in files {
-        let file_path = &unpacked_path.join(file.name);
+        let file_path = &unpacked_path.join(&file.name);
         match File::create(file_path) {
             Ok(mut f) => {
                 let starting_position = file.start as usize * SECTOR_LENGTH;
-                f.write_all(&data[starting_position..starting_position + file.length as usize]);
+                match f.write_all(&data[starting_position..starting_position + file.length as usize]) {
+                    Ok(_) => {},
+                    Err(e) => return Err(format!("Error encountered while writing file {}: {}", &file.name, e)),
+                }
             },
             Err(e) => return Err(format!("Unable to create a file at path {}: {}", file_path.to_string_lossy(), e)),
         }
