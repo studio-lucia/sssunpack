@@ -14,6 +14,9 @@ const SECTOR_LENGTH : usize = 2048;
 struct FileEntry {
     name: String,
     start: u16,
+    // This field is contained in the header, so we're still storing it
+    // even though currently nothing in this script uses it.
+    #[allow(dead_code)]
     end: u16,
     length: u16,
 }
