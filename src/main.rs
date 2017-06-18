@@ -18,11 +18,18 @@ struct FileEntry {
     // even though currently nothing in this script uses it.
     #[allow(dead_code)]
     end: u16,
-    length: u16,
+    length: u32,
 }
 
 fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
     return ((bytes[0] as u16) << 8) + bytes[1] as u16;
+}
+
+fn uint32_from_bytes(bytes : [u8; 4]) -> u32 {
+    return ((bytes[0] as u32) << 24) +
+        ((bytes[1] as u32) << 16) +
+        ((bytes[2] as u32) << 8) +
+        bytes[3] as u32;
 }
 
 fn parse_file_listing(data : &[u8]) -> Option<FileEntry> {
@@ -43,7 +50,7 @@ fn parse_file_listing(data : &[u8]) -> Option<FileEntry> {
         name: String::from_utf8(filename).unwrap(),
         start: uint16_from_bytes([data[14], data[15]]),
         end: uint16_from_bytes([data[18], data[19]]),
-        length: uint16_from_bytes([data[22], data[23]]),
+        length: uint32_from_bytes([data[20], data[21], data[22], data[23]]),
     });
 }
 
