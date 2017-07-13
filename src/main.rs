@@ -1,9 +1,13 @@
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
+use std::io::Cursor;
 use std::io::prelude::*;
 use std::path::Path;
 use std::process::exit;
+
+extern crate byteorder;
+use byteorder::{BigEndian, ReadBytesExt};
 
 extern crate clap;
 use clap::{Arg, App};
@@ -22,14 +26,15 @@ struct FileEntry {
 }
 
 fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
-    return ((bytes[0] as u16) << 8) + bytes[1] as u16;
+    return Cursor::new(bytes)
+        .read_u16::<BigEndian>()
+        .unwrap();
 }
 
 fn uint32_from_bytes(bytes : [u8; 4]) -> u32 {
-    return ((bytes[0] as u32) << 24) +
-        ((bytes[1] as u32) << 16) +
-        ((bytes[2] as u32) << 8) +
-        bytes[3] as u32;
+    return Cursor::new(bytes)
+        .read_u32::<BigEndian>()
+        .unwrap();
 }
 
 fn parse_file_listing(data : &[u8]) -> Option<FileEntry> {
