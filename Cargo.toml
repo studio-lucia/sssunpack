@@ -4,4 +4,5 @@ version = "0.3.0"
 authors = ["Misty De Meo <mistydemeo@gmail.com>"]
 
 [dependencies]
+byteorder = "1.1.0"
 clap = "2.24.2"
