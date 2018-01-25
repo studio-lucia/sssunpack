@@ -8,7 +8,7 @@ The original release of Lunar for the Saturn stores its data in a standard files
 
 On Mac:
 
-> brew install mistydemeo/lunar/sssunpack
+> brew install studio-lucia/lunar/sssunpack
 
 Building manually:
 
