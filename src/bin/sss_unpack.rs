@@ -150,7 +150,7 @@ fn do_stuff(input : String, target : String) -> Result<(), String> {
 }
 
 fn main() {
-    let matches = App::new("sssunpack")
+    let matches = App::new("sss_unpack")
                           .version("0.3.0")
                           .author("Misty De Meo")
                           .about("Unpack Lunar: Silver Star Story Complete data files")
