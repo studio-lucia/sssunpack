@@ -1,63 +1,17 @@
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
-use std::io::Cursor;
 use std::io::prelude::*;
 use std::path::Path;
 use std::process::exit;
 
 extern crate sss_unpack;
 use sss_unpack::consts::SECTOR_LENGTH;
-
-extern crate byteorder;
-use byteorder::{BigEndian, ReadBytesExt};
+use sss_unpack::file_entry::FileEntry;
+use sss_unpack::utils::{uint16_from_bytes, uint32_from_bytes};
 
 extern crate clap;
 use clap::{Arg, App};
-
-struct FileEntry {
-    name: String,
-    start: u16,
-    // This field is contained in the header, so we're still storing it
-    // even though currently nothing in this script uses it.
-    #[allow(dead_code)]
-    end: u16,
-    length: u32,
-}
-
-fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
-    return Cursor::new(bytes)
-        .read_u16::<BigEndian>()
-        .unwrap();
-}
-
-fn uint32_from_bytes(bytes : [u8; 4]) -> u32 {
-    return Cursor::new(bytes)
-        .read_u32::<BigEndian>()
-        .unwrap();
-}
-
-fn parse_file_listing(data : &[u8]) -> Option<FileEntry> {
-    // Filename can't begin with nul bytes, so this indicates
-    // dummy data.
-    if data[0] == 0x0 {
-        return None;
-    }
-
-    // Filename is up to 12 bytes, padded out with nul bytes we want to strip
-    let filename = data[0..12]
-        .iter()
-        .cloned()
-        .take_while(|i| *i != 0)
-        .collect();
-
-    return Some(FileEntry {
-        name: String::from_utf8(filename).unwrap(),
-        start: uint16_from_bytes([data[14], data[15]]),
-        end: uint16_from_bytes([data[18], data[19]]),
-        length: uint32_from_bytes([data[20], data[21], data[22], data[23]]),
-    });
-}
 
 // Given the first file, determines the size (in sectors) of the header.
 // The header may be one or more sectors, depending on how many files there are,
@@ -67,7 +21,7 @@ fn get_header_length(data : &[u8]) -> Result<usize, String> {
     // the header ends.
     // Since this is 0-indexed, we can return it directly to get the
     // header length in sectors.
-    match parse_file_listing(&data[0..24]) {
+    match FileEntry::parse_file_listing(&data[0..24]) {
         Some(f) => return Ok(f.start as usize),
         None => return Err(String::from("Unable to parse header!")),
     }
@@ -79,7 +33,7 @@ fn parse_files_from_header(data : &[u8]) -> Vec<FileEntry> {
     // chunks we slice here are going to be 0-byte and will parse to None
     return data[0..SECTOR_LENGTH * header_size.unwrap()]
         .chunks(24)
-        .filter_map(|header| parse_file_listing(header))
+        .filter_map(|header| FileEntry::parse_file_listing(header))
         .collect();
 }
 
