@@ -6,14 +6,14 @@ use std::io::prelude::*;
 use std::path::Path;
 use std::process::exit;
 
+extern crate sss_unpack;
+use sss_unpack::consts::SECTOR_LENGTH;
+
 extern crate byteorder;
 use byteorder::{BigEndian, ReadBytesExt};
 
 extern crate clap;
 use clap::{Arg, App};
-
-// Size of a Mode-1 CD-ROM sector, in bytes
-const SECTOR_LENGTH : usize = 2048;
 
 struct FileEntry {
     name: String,
