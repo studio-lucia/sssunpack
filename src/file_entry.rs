@@ -35,7 +35,12 @@ impl FileEntry {
     }
 
     pub fn serialize(&self) -> Vec<u8> {
+        // Filename is exactly 12 bytes, with nul byte padding
+        // 12 bytes is 8.3 with the period separator,
+        // but smaller filenames are obviously possible.
         let mut data = Vec::from(self.name.as_bytes());
+        data.resize(12, 0);
+
         data.append(&mut uint16_to_bytes(0));;
         data.append(&mut uint16_to_bytes(self.start));
         data.append(&mut uint16_to_bytes(0));;
@@ -69,16 +74,16 @@ impl FileList {
         let mut file_entries = vec![];
         for file in files {
             let file_length = file.metadata()?.len();
+            let end_boundary = ((index as u64 + file_length) / 2048) + 1;
+
             file_entries.push(FileEntry {
                 name: String::from(file.file_name().unwrap().to_str().unwrap()),
                 start: index as u16,
-                end: index as u16 + file_length as u16,
+                end: end_boundary as u16,
                 length: file_length as u32,
             });
 
-            index += file_length as usize;
-            // Pad up to an even sector boundary if necessary
-            index += SECTOR_LENGTH - (file_length as usize % SECTOR_LENGTH);
+            index += end_boundary as usize;
         }
 
         return Ok(FileList {
