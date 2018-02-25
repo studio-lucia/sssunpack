@@ -8,7 +8,6 @@ use std::process::exit;
 extern crate sss_unpack;
 use sss_unpack::consts::SECTOR_LENGTH;
 use sss_unpack::file_entry::FileEntry;
-use sss_unpack::utils::{uint16_from_bytes, uint32_from_bytes};
 
 extern crate clap;
 use clap::{Arg, App};
