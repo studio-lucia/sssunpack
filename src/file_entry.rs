@@ -41,9 +41,9 @@ impl FileEntry {
         let mut data = Vec::from(self.name.as_bytes());
         data.resize(12, 0);
 
-        data.append(&mut uint16_to_bytes(0));;
+        data.append(&mut uint16_to_bytes(0));
         data.append(&mut uint16_to_bytes(self.start));
-        data.append(&mut uint16_to_bytes(0));;
+        data.append(&mut uint16_to_bytes(0));
         data.append(&mut uint16_to_bytes(self.end));
         data.append(&mut uint32_to_bytes(self.length));
 
