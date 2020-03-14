@@ -1,11 +1,11 @@
 use std::fs::File;
 use std::io;
-use std::io::{BufReader, BufWriter};
 use std::io::prelude::*;
+use std::io::{BufReader, BufWriter};
 use std::path::PathBuf;
 use std::process::exit;
 
-use clap::{Arg, App};
+use clap::{App, Arg};
 
 use sss_unpack::consts::SECTOR_LENGTH;
 use sss_unpack::file_entry::FileList;
@@ -50,22 +50,30 @@ fn process(input_files: Vec<PathBuf>, target: PathBuf) -> io::Result<()> {
 
 fn main() {
     let matches = App::new("sss_pack")
-                          .version("0.3.0")
-                          .author("Misty De Meo")
-                          .about("Pack Lunar: Silver Star Story Complete data files")
-                          .arg(Arg::with_name("target")
-                              .help("The packed filename")
-                              .required(true)
-                              .index(1))
-                          .arg(Arg::with_name("input")
-                              .help("File(s) to pack")
-                              .required(true)
-                              .multiple(true))
-                          .get_matches();
+        .version("0.3.0")
+        .author("Misty De Meo")
+        .about("Pack Lunar: Silver Star Story Complete data files")
+        .arg(
+            Arg::with_name("target")
+                .help("The packed filename")
+                .required(true)
+                .index(1),
+        )
+        .arg(
+            Arg::with_name("input")
+                .help("File(s) to pack")
+                .required(true)
+                .multiple(true),
+        )
+        .get_matches();
     let target = matches.value_of("target").unwrap();
     let target_path = PathBuf::from(&target);
 
-    let mut input_files = matches.values_of("input").unwrap().map(|path| PathBuf::from(path)).collect::<Vec<PathBuf>>();
+    let mut input_files = matches
+        .values_of("input")
+        .unwrap()
+        .map(|path| PathBuf::from(path))
+        .collect::<Vec<PathBuf>>();
     // Thanks APFS
     input_files.sort();
     if input_files.iter().any(|path| !path.exists()) {
@@ -78,6 +86,6 @@ fn main() {
         Err(e) => {
             println!("{}", e);
             1
-        },
+        }
     });
 }

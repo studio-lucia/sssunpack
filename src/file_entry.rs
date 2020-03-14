@@ -1,8 +1,8 @@
 use std::io;
 use std::path::PathBuf;
 
-use crate::utils::{uint16_from_bytes, uint32_from_bytes, uint16_to_bytes, uint32_to_bytes};
 use crate::consts::SECTOR_LENGTH;
+use crate::utils::{uint16_from_bytes, uint16_to_bytes, uint32_from_bytes, uint32_to_bytes};
 
 pub struct FileEntry {
     pub name: String,
@@ -12,7 +12,7 @@ pub struct FileEntry {
 }
 
 impl FileEntry {
-    pub fn parse_file_listing(data : &[u8]) -> Option<FileEntry> {
+    pub fn parse_file_listing(data: &[u8]) -> Option<FileEntry> {
         // Filename can't begin with nul bytes, so this indicates
         // dummy data.
         if data[0] == 0x0 {
@@ -53,7 +53,7 @@ impl FileEntry {
     }
 }
 
-fn fold_vecs<T>(mut a : Vec<T>, b : Vec<T>) -> Vec<T> {
+fn fold_vecs<T>(mut a: Vec<T>, b: Vec<T>) -> Vec<T> {
     a.extend(b);
     return a;
 }
