@@ -5,10 +5,8 @@ use std::io::prelude::*;
 use std::path::PathBuf;
 use std::process::exit;
 
-extern crate clap;
 use clap::{Arg, App};
 
-extern crate sss_unpack;
 use sss_unpack::consts::SECTOR_LENGTH;
 use sss_unpack::file_entry::FileList;
 

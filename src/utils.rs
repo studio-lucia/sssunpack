@@ -1,7 +1,6 @@
 use std::io::Cursor;
 
-extern crate byteorder;
-use self::byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 pub fn uint16_from_bytes(bytes : [u8; 2]) -> u16 {
     return Cursor::new(bytes)

@@ -1,8 +1,8 @@
 use std::io;
 use std::path::PathBuf;
 
-use utils::{uint16_from_bytes, uint32_from_bytes, uint16_to_bytes, uint32_to_bytes};
-use consts::SECTOR_LENGTH;
+use crate::utils::{uint16_from_bytes, uint32_from_bytes, uint16_to_bytes, uint32_to_bytes};
+use crate::consts::SECTOR_LENGTH;
 
 pub struct FileEntry {
     pub name: String,
